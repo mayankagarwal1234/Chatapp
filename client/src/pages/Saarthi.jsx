@@ -35,7 +35,7 @@ const Saarthi = () => {
   return (
     <div className="w-full h-screen relative">
       <div
-        className={`backdrop-blur-2xl border border-white rounded overflow-visible h-full grid transition-all duration-300 ${
+        className={`backdrop-blur-xl border border-white rounded overflow-visible h-full grid transition-all duration-300 ${
           extended ? "grid-cols-[250px_1fr]" : "grid-cols-[90px_1fr]"
         }`}
       >
