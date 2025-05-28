@@ -41,7 +41,7 @@ const SaarthiSidebar = ({ extended, setExtended }) => {
     <div
       className={`relative z-50 min-h-screen ${
         extended ? "max-w-[250px]" : "max-w-[85px]"
-      } bg-[#8185B2]/10 text-white inline-flex flex-col justify-between p-5 rounded-r-xl transition-all duration-300 overflow-visible`}
+      }  bg-blue-300/10 text-white inline-flex flex-col justify-between p-5 rounded-r-md transition-all duration-300 overflow-visible`}
     >
       <div className="space-y-8 overflow-visible max-h-full">
         {/* Header */}
