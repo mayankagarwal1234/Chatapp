@@ -40,7 +40,7 @@ const SaarthiMain = ({ loading, prompt, setPrompt, handleAsk }) => {
   ];
 
   return (
-    <div className="flex flex-col h-screen text-black relative">
+    <div className="flex flex-col bg-blue-400/15 h-screen text-black relative">
       {/* Scrollable Main Content */}
       <div
         className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-12 pt-6 pb-40"
