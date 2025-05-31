@@ -8,7 +8,7 @@ export const GeminiProvider = ({ children }) => {
   const [chatSessions, setChatSessions] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(" ");
 
-  const { axios } = useContext(AuthContext);
+  const { axios ,authUser,loading} = useContext(AuthContext);
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
@@ -22,6 +22,8 @@ export const GeminiProvider = ({ children }) => {
 
   // ✅ Fetch chat history
   const fetchAiMessages = async () => {
+     if (!authUser) return; // safety check
+
     try {
       const prevSelectedId = selectedChatId; // ✅ store current selection
 
@@ -50,6 +52,13 @@ export const GeminiProvider = ({ children }) => {
       toast.error("Failed to load AI chat history.");
     }
   };
+
+   useEffect(() => {
+    if (!loading && authUser) {
+      fetchAiMessages();
+    }
+  }, [loading, authUser]);
+
 
   // ✅ Send prompt
   const sendAiPrompt = async (prompt) => {
