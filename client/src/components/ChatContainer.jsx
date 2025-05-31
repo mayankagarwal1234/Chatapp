@@ -80,7 +80,7 @@ const ChatContainer = () => {
             setSelectedUser(null);
           }}
         />
-        <p
+        <div
           onClick={() => navigate("/saarthi")}
           className="relative cursor-pointer text-sm flex items-center gap-2 max-md:hidden w-fit "
         >
@@ -96,7 +96,7 @@ const ChatContainer = () => {
                     Saarthi
                   </div>
                 )}
-        </p>
+        </div>
       </div>
 
       {/* Chat Area */}
