@@ -13,16 +13,22 @@ export const AuthProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [socket, setSocket] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Check if the user is authenticated and connect the socket
   const checkAuth = async () => {
-
+    try {
       const { data } = await axios.get("/api/auth/check");
       if (data.success) {
         setAuthUser(data.user);
         connectSocket(data.user);
       }
-    } 
+    } catch (err) {
+      // Handle error or ignore
+    } finally {
+      setLoading(false); // <--- done loading, whether success or fail
+    }
+  };
 
   // Login or Sign Up
   const login = async (state, credentials) => {
@@ -49,7 +55,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setAuthUser(null);
     setOnlineUsers([]);
-    axios.defaults.headers.common["token"]=null;
+    axios.defaults.headers.common["token"] = null;
     toast.success("Logged out Successfully");
     socket.disconnect();
   };
@@ -91,20 +97,16 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
+  const value = {
+    axios,
+    authUser,
+    onlineUsers,
+    socket,
+    login,
+    logout,
+    updateProfile,
+    loading
+  };
 
-     const value = {
-        axios,
-        authUser,
-        onlineUsers,
-        socket,
-        login,
-        logout,
-        updateProfile,
-      }
-    
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
