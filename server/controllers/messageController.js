@@ -5,17 +5,20 @@ import { io, userSocketMap } from "../server.js";
 
 
 // Get all users except the logged in user
+
+// Get all users except the logged in user
 export const getUserForSidebar = async (req, res) => {
   try {
     const userId = req.user._id;
 
     // Get all users except the logged-in user
-    let filteredUsers = await User.find({ _id: { $ne: userId } }).select("-password");
+    const filteredUsers = await User.find({ _id: { $ne: userId } }).select("-password");
 
     const unseenMessages = {};
 
     const enrichedUsers = await Promise.all(
       filteredUsers.map(async (user) => {
+        // Count unseen messages FROM this user TO the logged-in user
         const messages = await Message.find({
           senderId: user._id,
           receiverId: userId,
@@ -26,24 +29,24 @@ export const getUserForSidebar = async (req, res) => {
           unseenMessages[user._id] = messages.length;
         }
 
-        // Get the latest message between the two users
+        // ✅ Get the latest message from this sidebar user TO the logged-in user
         const lastMessage = await Message.findOne({
-          $or: [
-            { senderId: userId, receiverId: user._id },
-            { senderId: user._id, receiverId: userId },
-          ],
+          senderId: user._id,
+          receiverId: userId,
         })
           .sort({ createdAt: -1 })
+          .select("text createdAt")
           .limit(1);
 
         return {
           ...user.toObject(),
+          lastMessageText: lastMessage ? lastMessage.text : null,
           lastMessageTime: lastMessage ? lastMessage.createdAt : null,
         };
       })
     );
 
-    // Sort users by lastMessageTime (descending)
+    // Sort sidebar users based on their last message timestamp
     enrichedUsers.sort((a, b) => {
       const timeA = new Date(a.lastMessageTime || 0);
       const timeB = new Date(b.lastMessageTime || 0);
@@ -64,7 +67,6 @@ export const getUserForSidebar = async (req, res) => {
     });
   }
 };
-
 
 
 //get all messages for selected user
