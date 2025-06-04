@@ -15,6 +15,7 @@ const Sidebar = () => {
   } = useContext(ChatContext);
   const { logout, onlineUsers } = useContext(AuthContext);
   const [input, setInput] = useState("");
+  const [showMenu, setShowMenu] = useState(false);
 
   const navigate = useNavigate();
 
@@ -38,42 +39,53 @@ const Sidebar = () => {
         {/* Logo and menu */}
         <div className="flex justify-between items-center">
           <img src={assets.logo} alt="logo" className="max-w-40 rounded-lg" />
-          <div className="relative py-2 group">
+
+          {/* Menu Icon and Dropdown */}
+          <div className="relative">
             <img
               src={assets.menu_icon}
               alt="menu"
               className="max-h-5 cursor-pointer"
+              onClick={() => setShowMenu((prev) => !prev)}
             />
 
-            <div className="absolute top-full right-0 z-20 w-40 p-4 rounded-md bg-[#e2e0e9] border border-gray-600 text-black hidden group-hover:block space-y-2">
-              {/* Edit Profile */}
-              <div
-                onClick={() => navigate("/profile")}
-                className="flex items-center gap-2 cursor-pointer hover:bg-blue-200 px-2 py-1 rounded-md"
-              >
-                <img
-                  src={assets.pencil_icon}
-                  alt="Edit"
-                  className="w-4 h-4 object-cover"
-                />
-                <p className="text-sm">Edit Profile</p>
-              </div>
+            {showMenu && (
+              <div className="absolute top-full right-0 z-20 w-40 p-4 rounded-md bg-[#e2e0e9] border border-gray-600 text-black space-y-2">
+                {/* Edit Profile */}
+                <div
+                  onClick={() => {
+                    navigate("/profile");
+                    setShowMenu(false);
+                  }}
+                  className="flex items-center gap-2 cursor-pointer hover:bg-blue-200 px-2 py-1 rounded-md"
+                >
+                  <img
+                    src={assets.pencil_icon}
+                    alt="Edit"
+                    className="w-4 h-4 object-cover"
+                  />
+                  <p className="text-sm">Edit Profile</p>
+                </div>
 
-              <hr className="border-t border-gray-400" />
+                <hr className="border-t border-gray-400" />
 
-              {/* Logout */}
-              <div
-                onClick={() => logout()}
-                className="flex items-center gap-2 cursor-pointer hover:bg-blue-200 px-2 py-1 rounded-md"
-              >
-                <img
-                  src={assets.logout}
-                  alt="Logout"
-                  className="w-4 h-4 object-cover"
-                />
-                <p className="text-sm">Logout</p>
+                {/* Logout */}
+                <div
+                  onClick={() => {
+                    logout();
+                    setShowMenu(false);
+                  }}
+                  className="flex items-center gap-2 cursor-pointer hover:bg-blue-200 px-2 py-1 rounded-md"
+                >
+                  <img
+                    src={assets.logout}
+                    alt="Logout"
+                    className="w-4 h-4 object-cover"
+                  />
+                  <p className="text-sm">Logout</p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -94,8 +106,6 @@ const Sidebar = () => {
             <div
               onClick={() => {
                 setSelectedUser(user);
-
-                // Clear unseen messages for this user locally
                 setUnseenMessages((prev) => ({
                   ...prev,
                   [user._id]: 0,
@@ -111,16 +121,35 @@ const Sidebar = () => {
                 alt="avatar"
                 className="w-[35px] aspect-[1/1] rounded-full"
               />
-              <div className="flex flex-col leading-5">
-                <p>{user.fullName}</p>
-                {onlineUsers.includes(user._id) ? (
-                  <span className="text-green-400 text-xs">Online</span>
-                ) : (
-                  <span className="text-neutral-400 text-xs">Offline</span>
-                )}
+              <div className="flex flex-col leading-5 w-full">
+                {/* Name */}
+                <p className="font-medium">{user.fullName}</p>
+
+                {/* Last message + status in one line */}
+                <div className="flex items-center justify-between text-xs text-gray-300">
+                  <p className="truncate w-[80%]">
+                    {user.lastMessageText
+                      ? user.lastMessageText.length > (selectedUser ? 15 : 50)
+                        ? user.lastMessageText.slice(
+                            0,
+                            selectedUser ? 15 : 50
+                          ) + "..."
+                        : user.lastMessageText
+                      : ""}
+                  </p>
+                  {onlineUsers.includes(user._id) ? (
+                    <span className="text-green-400 whitespace-nowrap">
+                      Online
+                    </span>
+                  ) : (
+                    <span className="text-neutral-400 whitespace-nowrap">
+                      Offline
+                    </span>
+                  )}
+                </div>
               </div>
               {unseenMessages[user._id] > 0 && (
-                <p className="absolute top-4 right-4 text-xs h-5 w-5 flex justify-center items-center rounded-full bg-blue-500/50">
+                <p className="absolute top-2 right-4 text-xs h-4 w-4 flex justify-center items-center rounded-full bg-blue-500/50">
                   {unseenMessages[user._id]}
                 </p>
               )}
