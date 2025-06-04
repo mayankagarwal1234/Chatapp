@@ -4,7 +4,12 @@ import SaarthiMain from "../components/SaarthiMain";
 import { GeminiContext } from "../../context/GeminiContext.jsx";
 
 const Saarthi = () => {
-  const [extended, setExtended] = useState(true);
+ const [extended, setExtended] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.innerWidth > 640; 
+    }
+    return false; 
+  });
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState("");
 
